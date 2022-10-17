@@ -1,0 +1,33 @@
+version: '2'
+
+services:
+  web:
+    image: php:7.2-apache
+    build: ./build/php-apache
+    ports:
+      - 80:80
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    build: ./build/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+    - ./build/mysql/trophies.sql:/docker-entrypoint-initdb.d/trophies.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: trophies
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports: 
+      - 200:80
+    environment:
+      - PMA_ARBITRARY=1
